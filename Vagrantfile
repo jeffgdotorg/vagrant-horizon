@@ -31,5 +31,6 @@ Vagrant.configure("2") do |config|
     /sbin/install_iplike-12.sh
     systemctl enable opennms
     systemctl start opennms
+    /usr/bin/install -o vagrant -g vagrant -m 0600 /vagrant/dot_bash_history /home/vagrant/.bash_history
   SHELL
 end
