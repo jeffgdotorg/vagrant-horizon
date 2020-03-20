@@ -1,5 +1,5 @@
 Vagrant.configure("2") do |config|
-  config.vm.box = "centos/7"
+  config.vm.box = "centos/8"
   config.vm.network "forwarded_port", guest: 8980, host: 8980, host_ip: "127.0.0.1"
 
   config.vm.provider "virtualbox" do |vb|
@@ -15,15 +15,15 @@ Vagrant.configure("2") do |config|
     yum -y install epel-release
     yum -y install haveged
     yum -y install java-11-openjdk-devel
-    yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-    yum -y install postgresql12-server postgresql12
+    yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    yum --disablerepo=AppStream -y install postgresql12-server postgresql12
     systemctl enable haveged
     systemctl start haveged
     /usr/pgsql-12/bin/postgresql-12-setup initdb
     sed -i -e '/^host.*all.*all.*ident$/s/ident/trust/' /var/lib/pgsql/12/data/pg_hba.conf
     systemctl enable postgresql-12
     systemctl start postgresql-12
-    yum -y install http://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
+    yum -y install http://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch.rpm
     yum -y install jrrd2 iplike-pgsql12
     yum -y install opennms-core opennms-webapp-jetty grafana opennms-helm
     hostnamectl set-hostname horizon-$(rpm -q opennms-core | awk -F- '{ print $3 }' | sed -e 's/\\./-/g')
