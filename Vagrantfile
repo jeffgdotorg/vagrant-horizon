@@ -1,6 +1,7 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "centos/8"
   config.vm.network "forwarded_port", guest: 8980, host: 8980, host_ip: "127.0.0.1"
+  config.vm.network "forwarded_port", guest: 3000, host: 3000, host_ip: "127.0.0.1"
 
   config.vm.provider "virtualbox" do |vb|
     vb.memory = 2048
@@ -9,7 +10,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     yum -y install vim-enhanced nmap-ncat net-snmp net-snmp-utils rrdtool
-    sed '/^view.*systemview.*included.*\.1\.3\.6\.1\.2\.1\.1/s/\.1\.3\.6\.1\.2\.1\.1$/.1/'
+    sed -i -e '/^view.*systemview.*included.*\.1\.3\.6\.1\.2\.1\.1/s/\.1\.3\.6\.1\.2\.1\.1$/.1/' /etc/snmp/snmpd.conf
     systemctl enable snmpd
     systemctl start snmpd
     yum -y install epel-release
@@ -32,6 +33,9 @@ Vagrant.configure("2") do |config|
     /sbin/install_iplike-12.sh
     systemctl enable opennms
     systemctl start opennms
+    systemctl enable grafana-server
+    systemctl start grafana-server
+    sed -i -e '/^Defaults.*secure_path = /s,$,:/opt/opennms/bin,' /etc/sudoers
     /usr/bin/install -o vagrant -g vagrant -m 0600 /vagrant/dot_bash_history /home/vagrant/.bash_history
   SHELL
 end
