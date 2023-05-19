@@ -21,8 +21,8 @@ Vagrant.configure("2") do |config|
     postgresql-setup initdb
     sed -i -e '/^host.*all.*all.*ident$/s/ident/trust/' /var/lib/pgsql/data/pg_hba.conf
     systemctl enable --now postgresql
-    curl -1sLf 'https://packages.opennms.com/public/common/setup.rpm.sh' | sudo -E bash
-    curl -1sLf 'https://packages.opennms.com/public/${HORIZON_REPO:-stable}/setup.rpm.sh' | sudo -E bash
+    curl -1sLf "https://packages.opennms.com/public/common/setup.rpm.sh" | sudo -E bash
+    curl -1sLf "https://packages.opennms.com/public/${HORIZON_REPO:-stable}/setup.rpm.sh" | sudo -E bash
     /usr/bin/install -m 0644 /vagrant/grafana.repo /etc/yum.repos.d/
     dnf -y install jrrd2 iplike-pgsql13 grafana haveged
     if [ -z $HORIZON_VERSION ]; then
