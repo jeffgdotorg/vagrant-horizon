@@ -9,6 +9,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.provision "shell", inline: <<-SHELL
+    . /vagrant/versions.conf
     # Importing this key is necessary only until NMS-15602 is fixed
     rpm --import "https://yum.opennms.org/OPENNMS-GPG-KEY"
     dnf -y install vim-enhanced nmap-ncat net-snmp net-snmp-utils rrdtool
@@ -21,10 +22,14 @@ Vagrant.configure("2") do |config|
     sed -i -e '/^host.*all.*all.*ident$/s/ident/trust/' /var/lib/pgsql/data/pg_hba.conf
     systemctl enable --now postgresql
     curl -1sLf 'https://packages.opennms.com/public/common/setup.rpm.sh' | sudo -E bash
-    curl -1sLf 'https://packages.opennms.com/public/stable/setup.rpm.sh' | sudo -E bash
+    curl -1sLf 'https://packages.opennms.com/public/${HORIZON_REPO:-stable}/setup.rpm.sh' | sudo -E bash
     /usr/bin/install -m 0644 /vagrant/grafana.repo /etc/yum.repos.d/
-    dnf -y install jrrd2 iplike-pgsql13
-    dnf -y install haveged opennms-core opennms-webapp-jetty grafana
+    dnf -y install jrrd2 iplike-pgsql13 grafana haveged
+    if [ -z $HORIZON_VERSION ]; then
+      dnf -y install opennms-core opennms-webapp-jetty
+    else
+      dnf -y install opennms-core-${HORIZON_VERSION} opennms-webapp-jetty-${HORIZON_VERSION}
+    fi
     hostnamectl set-hostname horizon-$(rpm -q opennms-core | awk -F- '{ print $3 }' | sed -e 's/\\./-/g')
     /opt/opennms/bin/runjava -s
     /opt/opennms/bin/install -dis
