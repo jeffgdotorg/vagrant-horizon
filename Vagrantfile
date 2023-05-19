@@ -13,8 +13,8 @@ Vagrant.configure("2") do |config|
     rpm --import "https://yum.opennms.org/OPENNMS-GPG-KEY"
     dnf -y install vim-enhanced nmap-ncat net-snmp net-snmp-utils rrdtool
     sed -i -e '/^view.*systemview.*included.*\.1\.3\.6\.1\.2\.1\.1/s/\.1\.3\.6\.1\.2\.1\.1$/.1/' /etc/snmp/snmpd.conf
-    systemctl enable snmpd
-    systemctl start snmpd
+    systemctl enable --now snmpd
+    dnf -y install haveged
     dnf -y install java-11-openjdk-devel
     dnf install -y postgresql-server postgresql
     postgresql-setup initdb
@@ -28,6 +28,8 @@ Vagrant.configure("2") do |config|
     hostnamectl set-hostname horizon-$(rpm -q opennms-core | awk -F- '{ print $3 }' | sed -e 's/\\./-/g')
     /opt/opennms/bin/runjava -s
     /opt/opennms/bin/install -dis
+    sed -i -e '/0.0.0.0/s/<!--//' /opt/opennms/etc/opennms-activemq.xml
+    sed -i -e '/0.0.0.0/s/-->//' /opt/opennms/etc/opennms-activemq.xml
     /sbin/install_iplike-13.sh
     systemctl enable --now haveged
     systemctl enable --now opennms
