@@ -32,6 +32,8 @@ Vagrant.configure("2") do |config|
     fi
     hostnamectl set-hostname horizon-$(rpm -q opennms-core | awk -F- '{ print $3 }' | sed -e 's/\\./-/g')
     /opt/opennms/bin/runjava -s
+    cp /vagrant/org.opennms.features.datachoices.cfg /opt/opennms/etc/
+    /opt/opennms/bin/fix-permissions
     /opt/opennms/bin/install -dis
     sed -i -e '/0.0.0.0/s/<!--//' /opt/opennms/etc/opennms-activemq.xml
     sed -i -e '/0.0.0.0/s/-->//' /opt/opennms/etc/opennms-activemq.xml
