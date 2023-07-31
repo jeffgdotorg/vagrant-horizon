@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
     sed -i -e '/^view.*systemview.*included.*\.1\.3\.6\.1\.2\.1\.1/s/\.1\.3\.6\.1\.2\.1\.1$/.1/' /etc/snmp/snmpd.conf
     systemctl enable --now snmpd
     dnf -y install haveged
-    dnf -y install java-11-openjdk-devel
+    dnf -y install tzdata-java java-17-openjdk-devel
     dnf install -y postgresql-server postgresql
     postgresql-setup initdb
     sed -i -e '/^host.*all.*all.*ident$/s/ident/trust/' /var/lib/pgsql/data/pg_hba.conf
